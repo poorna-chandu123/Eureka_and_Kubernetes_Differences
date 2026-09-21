@@ -1,0 +1,20 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/poorna-chandu123/Eureka_and_Kubernetes_Differences.git
+          default-label: main
+          search-paths:
+            - config-repo
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
