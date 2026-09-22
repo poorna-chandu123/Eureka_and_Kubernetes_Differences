@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.eurekakubernetes</groupId>
+    <artifactId>eureka-kubernetes-differences</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <name>Eureka and Kubernetes Differences</name>
+    <description>Multi-module microservices project for learning Eureka and Kubernetes service discovery</description>
+
+    <modules>
+        <module>common/customer-service</module>
+        <module>common/account-service</module>
+        <module>common/auth-server</module>
+        <module>common/api-gateway</module>
+        <module>common/config-server</module>
+        <module>eureka-setup/discovery-server</module>
+    </modules>
+
+</project>
