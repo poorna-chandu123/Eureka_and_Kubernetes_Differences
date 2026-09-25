@@ -4,14 +4,18 @@ server:
 spring:
   application:
     name: config-server
+
   cloud:
     config:
       server:
         git:
+          # The whole GitHub repository is used as the Git backend.
+          # The actual configuration files are inside the config-repo/ folder.
           uri: https://github.com/poorna-chandu123/Eureka_and_Kubernetes_Differences.git
           default-label: main
           search-paths:
             - config-repo
+          clone-on-start: true
 
 management:
   endpoints:

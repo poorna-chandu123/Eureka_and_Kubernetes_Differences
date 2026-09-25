@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: auth-server
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/auth_service_db?useSSL=false&serverTimezone=Asia/Kolkata
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 9000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+app:
+  jwt:
+    # IMPORTANT: Keep the same secret in API Gateway, Customer Service and Account Service.
+    # Replace this local-learning value before any real deployment.
+    secret: JwtSecretKey1231233484347790416347825343yr54w4356363925444444
+    expiration: 30s
+    issuer: http://localhost:9000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

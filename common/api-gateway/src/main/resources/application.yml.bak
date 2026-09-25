@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: api-gateway
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
+  # JWT settings used by the Gateway Resource Server.
+  cloud:
+    gateway:
+      routes:
+        - id: auth-server
+          uri: lb://AUTH-SERVER
+          predicates:
+            - Path=/api/auth/**
+        - id: customer-service
+          uri: lb://CUSTOMER-SERVICE
+          predicates:
+            - Path=/api/customers/**
+        - id: account-service
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/api/accounts/**
+
+app:
+  jwt:
+    secret: JwtSecretKey1231233484347790416347825343yr54w4356363925444444
+    issuer: http://localhost:9000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+server:
+  port: 9090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -1,2 +1,13 @@
-# Shared configuration for all services.
-# Phase 1 keeps common configuration intentionally small.
+# COMMON CONFIGURATION
+# Applied to every Config Client unless overridden by the service-specific YAML.
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

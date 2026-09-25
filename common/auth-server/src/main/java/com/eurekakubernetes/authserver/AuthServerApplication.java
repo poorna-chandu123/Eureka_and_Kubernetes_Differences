@@ -1,11 +1,11 @@
-package com.eurekakubernetes.gateway;
+package com.eurekakubernetes.authserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApiGatewayApplication {
+public class AuthServerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ApiGatewayApplication.class, args);
+        SpringApplication.run(AuthServerApplication.class, args);
     }
 }
