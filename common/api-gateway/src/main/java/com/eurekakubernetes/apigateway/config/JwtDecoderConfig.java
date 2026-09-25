@@ -2,29 +2,29 @@ package com.eurekakubernetes.apigateway.config;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 
 @Configuration
 public class JwtDecoderConfig {
-    @Value("${app.jwt.secret}")
-    private String secret;
 
-    @Value("${app.jwt.issuer}")
-    private String issuer;
+    @Value("${app.jwt.secret}")
+    private String jwtSecret;
 
     @Bean
-    public JwtDecoder jwtDecoder() {
-        SecretKey key = new SecretKeySpec(secret.getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256");
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(key)
-            .macAlgorithm(MacAlgorithm.HS256)
-            .build();
-        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(issuer));
-        return decoder;
+    public ReactiveJwtDecoder jwtDecoder() {
+
+        SecretKey secretKey = new SecretKeySpec(
+                jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                "HmacSHA256"
+        );
+
+        return NimbusReactiveJwtDecoder
+                .withSecretKey(secretKey)
+                .build();
     }
 }
