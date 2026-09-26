@@ -6,8 +6,3 @@ management:
     web:
       exposure:
         include: health,info
-
-spring:
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
