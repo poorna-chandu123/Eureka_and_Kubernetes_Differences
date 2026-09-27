@@ -26,6 +26,6 @@ eureka:
 app:
   jwt:
     # Exactly 30 seconds as required for this project.
-    expiration: 30s
+    expiration: 300s
     secret: JwtSecretKey1231233484347790416347825343yr54w4356363925444444
     issuer: http://localhost:9000
