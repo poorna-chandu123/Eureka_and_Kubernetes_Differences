@@ -26,6 +26,6 @@ eureka:
 app:
   jwt:
     # JWT Expire time 
-    expiration: 300000s
+    expiration: 3000000s
     secret: JwtSecretKey1231233484347790416347825343yr54w4356363925444444
     issuer: http://localhost:9000
