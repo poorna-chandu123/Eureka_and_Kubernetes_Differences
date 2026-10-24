@@ -1,0 +1,22 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          # Same remote repository as V1; V2 files live in the config-repo-v2/ folder.
+          uri: https://github.com/poorna-chandu123/Eureka_and_Kubernetes_Differences.git
+          default-label: main
+          search-paths:
+            - config-repo-v2
+          clone-on-start: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

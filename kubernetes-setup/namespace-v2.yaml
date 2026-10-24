@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: banking-v2
+  labels:
+    app.kubernetes.io/part-of: banking-system
+    deployment-version: v2

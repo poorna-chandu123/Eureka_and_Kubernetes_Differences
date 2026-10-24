@@ -23,3 +23,15 @@ Each API operation has a dedicated response section below the form.
 The UI also shows a toast message for success and backend/API errors.
 
 The UI does not modify backend APIs.
+
+====================== V1 & V2 UI deployment files details =====================
+
+FOR V1 files which are related to ( Docker + Eureka )
+
+1.Dockerfile
+2.proxy.docker.conf
+
+FOR V1 files which are related to ( Docker + kubernetes )
+
+1.Dockerfile.v2
+2.proxy.kubernetes.conf

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: account-service-v2
+  namespace: banking-v2
+  labels:
+    app: account-service-v2
+spec:
+  type: ClusterIP
+  selector:
+    app: account-service-v2
+  ports:
+    - name: http
+      port: 8082
+      targetPort: 8082

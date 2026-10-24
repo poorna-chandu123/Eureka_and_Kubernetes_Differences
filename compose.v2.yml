@@ -1,0 +1,22 @@
+# Build V2 images together; this file does not deploy to Kubernetes.
+# From repository root: docker compose -f compose.v2.yml build
+name: banking-v2-images
+services:
+  config-server:
+    image: banking-config-server:v2-local
+    build: {context: ., dockerfile: common/config-server/Dockerfile.v2}
+  auth-server:
+    image: banking-auth-server:v2-local
+    build: {context: ., dockerfile: common/auth-server/Dockerfile.v2}
+  customer-service:
+    image: banking-customer-service:v2-local
+    build: {context: ., dockerfile: common/customer-service/Dockerfile.v2}
+  account-service:
+    image: banking-account-service:v2-local
+    build: {context: ., dockerfile: common/account-service/Dockerfile.v2}
+  api-gateway:
+    image: banking-api-gateway:v2-local
+    build: {context: ., dockerfile: common/api-gateway/Dockerfile.v2}
+  frontend:
+    image: banking-frontend:v2-local
+    build: {context: ./frontend, dockerfile: Dockerfile.v2}

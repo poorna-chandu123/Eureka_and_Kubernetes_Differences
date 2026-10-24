@@ -1,0 +1,12 @@
+# Shared settings for all V2 Config Clients.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false

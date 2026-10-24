@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "http://api-gateway:9090",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

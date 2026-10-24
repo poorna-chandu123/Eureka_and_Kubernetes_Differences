@@ -25,7 +25,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-server:8761/eureka/     #changed http://localhost to http://discovery-server in the part of Docker Compose if i want to run intelij i need to change this agin 
     register-with-eureka: true
     fetch-registry: true
 

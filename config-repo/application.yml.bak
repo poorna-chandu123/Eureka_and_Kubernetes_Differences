@@ -1,8 +1,0 @@
-# COMMON CONFIGURATION
-# Applied to every Config Client unless overridden by the service-specific YAML.
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info

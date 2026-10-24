@@ -1,0 +1,32 @@
+server:
+  port: 9090
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-server-v2
+              uri: http://auth-server-v2:9000
+              predicates:
+                - Path=/api/auth/**
+            - id: customer-service-v2
+              uri: http://customer-service-v2:8081
+              predicates:
+                - Path=/api/customers/**
+            - id: account-service-v2
+              uri: http://account-service-v2:8082
+              predicates:
+                - Path=/api/accounts/**
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+app:
+  jwt:
+    secret: "JwtSecretKey1231233484347790416347825343yr54w4356363925444444"
+    issuer: http://localhost:9000

@@ -1,0 +1,73 @@
+name: banking-v1
+services:
+  config-server:
+    image: banking-config-server:local
+    build: { context: ., dockerfile: common/config-server/Dockerfile }
+    ports: ["8888:8888"]
+    networks: [banking-v1]
+    restart: unless-stopped
+  discovery-server:
+    image: banking-discovery-server:local
+    build: { context: ., dockerfile: eureka-setup/discovery-server/Dockerfile }
+    ports: ["8761:8761"]
+    networks: [banking-v1]
+    depends_on: [config-server]
+    restart: unless-stopped
+  auth-server:
+    image: banking-auth-server:local
+    build: { context: ., dockerfile: common/auth-server/Dockerfile }
+    ports: ["9000:9000"]
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/auth_service_db?useSSL=false&serverTimezone=Asia/Kolkata"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-server:8761/eureka/"
+    networks: [banking-v1]
+    depends_on: [config-server, discovery-server]
+    restart: unless-stopped
+  customer-service:
+    image: banking-customer-service:local
+    build: { context: ., dockerfile: common/customer-service/Dockerfile }
+    ports: ["8081:8081"]
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/customer_service_db?useSSL=false&serverTimezone=Asia/Kolkata"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-server:8761/eureka/"
+    networks: [banking-v1]
+    depends_on: [config-server, discovery-server]
+    restart: unless-stopped
+  account-service:
+    image: banking-account-service:local
+    build: { context: ., dockerfile: common/account-service/Dockerfile }
+    ports: ["8082:8082"]
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/account_service_db?useSSL=false&serverTimezone=Asia/Kolkata"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-server:8761/eureka/"
+    networks: [banking-v1]
+    depends_on: [config-server, discovery-server]
+    restart: unless-stopped
+  api-gateway:
+    image: banking-api-gateway:local
+    build: { context: ., dockerfile: common/api-gateway/Dockerfile }
+    ports: ["9090:9090"]
+    environment:
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8888"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-server:8761/eureka/"
+    networks: [banking-v1]
+    depends_on: [config-server, discovery-server, auth-server, customer-service, account-service]
+    restart: unless-stopped
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api-gateway
+    networks: [banking-v1]
+    restart: unless-stopped
+
+networks:
+  banking-v1:
+    name: banking-v1
+    driver: bridge
