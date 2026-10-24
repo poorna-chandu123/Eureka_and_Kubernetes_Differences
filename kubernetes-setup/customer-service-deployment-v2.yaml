@@ -19,6 +19,12 @@ spec:
         - name: customer-service
           image: banking-customer-service:v2-local
           imagePullPolicy: IfNotPresent
+          command: ["java"]
+          args:
+            - "-Dspring.config.import=configserver:http://config-server-v2:8888"
+            - "-Dspring.profiles.active=v2"
+            - "-jar"
+            - "/app/app.jar"
           ports:
             - name: http
               containerPort: 8081
