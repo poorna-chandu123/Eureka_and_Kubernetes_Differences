@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: auth-server
-          image: banking-auth-server:v2-local
+          image: banking-auth-server:v2-fix5
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

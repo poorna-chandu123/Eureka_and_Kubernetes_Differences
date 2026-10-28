@@ -3,4 +3,6 @@ spring:
     name: auth-server
 
   config:
-    import: configserver:http://localhost:8888
+    import: "configserver:${CONFIG_SERVER_URL:http://config-server:8888}"
+    
+    #changed http://localhost to http://config-server in the part of Docker Compose

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: account-service
-          image: banking-account-service:v2-local
+          image: banking-account-service:v2-fix1
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

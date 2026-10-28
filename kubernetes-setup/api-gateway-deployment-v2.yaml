@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: banking-api-gateway:v2-local
+          image: banking-api-gateway:v2-fix2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -32,14 +32,21 @@ spec:
             - name: EUREKA_CLIENT_FETCH_REGISTRY
               value: "false"
             - name: SPRING_PROFILES_ACTIVE
-              value: "v2"              
+              value: "v2"
+          startupProbe:
+            tcpSocket:
+              port: 9090
+            periodSeconds: 10
+            failureThreshold: 30
           readinessProbe:
             tcpSocket:
               port: 9090
-            initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
           livenessProbe:
             tcpSocket:
               port: 9090
-            initialDelaySeconds: 45
             periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-server-v2
+  namespace: banking-v2
+  labels:
+    app: auth-server-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-server-v2
+  template:
+    metadata:
+      labels:
+        app: auth-server-v2
+    spec:
+      containers:
+        - name: auth-server
+          image: banking-auth-server:v2-fix2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9000
+          env:
+            - name: SPRING_CLOUD_BOOTSTRAP_ENABLED
+              value: "true"
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "http://config-server-v2:8888"
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+            - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
+              value: "false"
+            - name: EUREKA_CLIENT_FETCH_REGISTRY
+              value: "false"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://host.docker.internal:3306/auth_service_db?useSSL=false&serverTimezone=Asia/Kolkata"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "v2"              
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 45
+            periodSeconds: 20
