@@ -55,7 +55,7 @@ pipeline {
                         echo ERROR: compose.v1.yml was not found in the repository root.
                         exit /b 1
                     )
-                    docker compose -f compose.v1.yml config --quiet
+                    docker-compose -f compose.v1.yml config --quiet
                 '''
             }
         }
@@ -64,13 +64,13 @@ pipeline {
             steps {
                 // Uses existing V1 build contexts, Dockerfiles, and image tags from compose.v1.yml.
                 // This builds images only; it does not run Compose up/down.
-                bat 'docker compose -f compose.v1.yml build'
+                bat 'docker-compose -f compose.v1.yml build'
             }
         }
 
         stage('List V1 Docker Images') {
             steps {
-                bat 'docker compose -f compose.v1.yml images'
+                bat 'docker-compose -f compose.v1.yml images'
             }
         }
     }
