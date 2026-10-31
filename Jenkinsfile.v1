@@ -1,3 +1,19 @@
+/*
+ * Banking Microservices - V1 CI pipeline
+ *
+ * V1 only. Builds images from the existing build definitions in compose.v1.yml.
+ * It does not start, stop, restart, or deploy containers.
+ *
+ * CHECK: compose.v1.yml must contain `build:` definitions for the V1 services
+ * whose images should be built. Keep the real V1 contexts, Dockerfile paths,
+ * and image tags in that file. This Jenkinsfile intentionally does not guess
+ * those names or duplicate them.
+ *
+ * If compose.v1.yml has only `image:` entries and no `build:` entries, the
+ * image-build stage cannot build those images. Add the correct existing V1
+ * build definitions to compose.v1.yml; do not change V2/Kubernetes files.
+ */
+
 pipeline {
     agent any
 
@@ -8,6 +24,8 @@ pipeline {
 
     options {
         skipDefaultCheckout(true)
+        timestamps()
+        disableConcurrentBuilds()
     }
 
     stages {
@@ -22,20 +40,50 @@ pipeline {
                 bat 'mvn -B clean verify'
             }
         }
-		
-		stage('Docker Connectivity Check') {
+
+        stage('Docker Connectivity Check') {
             steps {
                 bat 'docker version'
+                bat 'docker compose version'
+            }
+        }
+
+        stage('Validate V1 Compose Configuration') {
+            steps {
+                bat '''
+                    if not exist "compose.v1.yml" (
+                        echo ERROR: compose.v1.yml was not found in the repository root.
+                        exit /b 1
+                    )
+                    docker compose -f compose.v1.yml config --quiet
+                '''
+            }
+        }
+
+        stage('Build V1 Docker Images') {
+            steps {
+                // Uses existing V1 build contexts, Dockerfiles, and image tags from compose.v1.yml.
+                // This builds images only; it does not run Compose up/down.
+                bat 'docker compose -f compose.v1.yml build'
+            }
+        }
+
+        stage('List V1 Docker Images') {
+            steps {
+                bat 'docker compose -f compose.v1.yml images'
             }
         }
     }
 
     post {
         success {
-            echo 'V1 CI completed successfully.'
+            echo 'V1 CI completed: checkout, Maven verification, Docker checks, and V1 image build succeeded.'
         }
         failure {
-            echo 'V1 CI failed. Review the stage logs above.'
+            echo 'V1 CI failed. Check the first failed stage in Console Output. This pipeline does not deploy or restart V1.'
+        }
+        always {
+            echo 'Banking-V1-CI pipeline finished.'
         }
     }
 }
