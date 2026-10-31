@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK21'
+        maven 'Maven399'
+    }
+
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    stages {
+        stage('Checkout V1 Source') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build and Test V1') {
+            steps {
+                bat 'mvn -B clean verify'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'V1 CI completed successfully.'
+        }
+        failure {
+            echo 'V1 CI failed. Review the stage logs above.'
+        }
+    }
+}
