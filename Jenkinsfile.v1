@@ -22,6 +22,12 @@ pipeline {
                 bat 'mvn -B clean verify'
             }
         }
+		
+		stage('Docker Connectivity Check') {
+            steps {
+                bat 'docker version'
+            }
+        }
     }
 
     post {
