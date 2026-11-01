@@ -1,19 +1,11 @@
 /*
- * Banking Microservices - V1 CI pipeline
+ * Banking V1 - CI + Continuous Deployment
+ * Jenkins job: Banking-V1-CI-CD
+ * Script Path: Jenkinsfile.v1
  *
- * V1 only. Builds images from the existing build definitions in compose.v1.yml.
- * It does not start, stop, restart, or deploy containers.
- *
- * CHECK: compose.v1.yml must contain `build:` definitions for the V1 services
- * whose images should be built. Keep the real V1 contexts, Dockerfile paths,
- * and image tags in that file. This Jenkinsfile intentionally does not guess
- * those names or duplicate them.
- *
- * If compose.v1.yml has only `image:` entries and no `build:` entries, the
- * image-build stage cannot build those images. Add the correct existing V1
- * build definitions to compose.v1.yml; do not change V2/Kubernetes files.
+ * Uses the existing V1 build contexts, Dockerfile paths and image tags
+ * declared in compose.v1.yml. Does not modify V2/Kubernetes configuration.
  */
-
 pipeline {
     agent any
 
@@ -62,28 +54,33 @@ pipeline {
 
         stage('Build V1 Docker Images') {
             steps {
-                // Uses existing V1 build contexts, Dockerfiles, and image tags from compose.v1.yml.
-                // This builds images only; it does not run Compose up/down.
                 bat 'docker-compose -f compose.v1.yml build'
             }
         }
 
-        stage('List V1 Docker Images') {
+        stage('Deploy V1') {
             steps {
-                bat 'docker-compose -f compose.v1.yml images'
+                // Starts V1 and recreates containers when the image/configuration requires it.
+                bat 'docker-compose -f compose.v1.yml up -d'
+            }
+        }
+
+        stage('Verify V1 Containers') {
+            steps {
+                bat 'docker-compose -f compose.v1.yml ps'
             }
         }
     }
 
     post {
         success {
-            echo 'V1 CI completed: checkout, Maven verification, Docker checks, and V1 image build succeeded.'
+            echo 'V1 CI/CD completed: Maven build, image build, deployment and status check succeeded.'
         }
         failure {
-            echo 'V1 CI failed. Check the first failed stage in Console Output. This pipeline does not deploy or restart V1.'
+            echo 'V1 CI/CD failed. Check the first failed stage in Console Output.'
         }
         always {
-            echo 'Banking-V1-CI pipeline finished.'
+            echo 'Banking-V1-CI-CD pipeline finished.'
         }
     }
 }

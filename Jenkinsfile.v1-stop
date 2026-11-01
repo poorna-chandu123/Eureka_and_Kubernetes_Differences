@@ -1,0 +1,51 @@
+/*
+ * Banking V1 - STOP existing containers
+ * Jenkins job: Banking-V1-STOP
+ * Script Path: Jenkinsfile.v1-stop
+ *
+ * Stops containers but retains containers and images.
+ */
+pipeline {
+    agent any
+
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Checkout V1 Compose Configuration') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Check Docker Compose') {
+            steps {
+                bat 'docker-compose version'
+            }
+        }
+
+        stage('Stop V1 Containers') {
+            steps {
+                bat 'docker-compose -f compose.v1.yml stop'
+            }
+        }
+
+        stage('Verify V1 Containers') {
+            steps {
+                bat 'docker-compose -f compose.v1.yml ps'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'V1 containers stopped. Containers and images are retained.'
+        }
+        failure {
+            echo 'V1 STOP failed. Check Console Output.'
+        }
+    }
+}

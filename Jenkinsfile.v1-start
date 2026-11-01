@@ -1,0 +1,53 @@
+/*
+ * Banking V1 - START existing stopped containers
+ * Jenkins job: Banking-V1-START
+ * Script Path: Jenkinsfile.v1-start
+ *
+ * Starts existing stopped containers. Does not run Maven or build images.
+ * If containers were removed (for example by `docker-compose down`), use
+ * Banking-V1-CI-CD to create and deploy them again.
+ */
+pipeline {
+    agent any
+
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Checkout V1 Compose Configuration') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Check Docker Compose') {
+            steps {
+                bat 'docker-compose version'
+            }
+        }
+
+        stage('Start Existing V1 Containers') {
+            steps {
+                bat 'docker-compose -f compose.v1.yml start'
+            }
+        }
+
+        stage('Verify V1 Containers') {
+            steps {
+                bat 'docker-compose -f compose.v1.yml ps'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Existing V1 containers started. No image rebuild was performed.'
+        }
+        failure {
+            echo 'V1 START failed. If containers do not exist, run Banking-V1-CI-CD.'
+        }
+    }
+}
