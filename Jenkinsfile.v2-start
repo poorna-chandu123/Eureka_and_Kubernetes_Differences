@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('Checkout V2 Configuration') {
+            steps { checkout scm }
+        }
+        stage('Check Kubernetes Context') {
+            steps {
+                bat 'kubectl config current-context'
+                bat 'kubectl get namespace banking-v2'
+            }
+        }
+        stage('Start V2 Workloads') {
+            steps {
+                bat 'kubectl scale deployment/config-server-v2 --replicas=1 -n banking-v2'
+                bat 'kubectl scale deployment/auth-server-v2 --replicas=1 -n banking-v2'
+                bat 'kubectl scale deployment/customer-service-v2 --replicas=1 -n banking-v2'
+                bat 'kubectl scale deployment/account-service-v2 --replicas=1 -n banking-v2'
+                bat 'kubectl scale deployment/api-gateway-v2 --replicas=1 -n banking-v2'
+                bat 'kubectl scale deployment/frontend-v2 --replicas=1 -n banking-v2'
+            }
+        }
+        stage('Wait for V2 Workloads') {
+            steps {
+                bat 'kubectl rollout status deployment/config-server-v2 -n banking-v2 --timeout=180s'
+                bat 'kubectl rollout status deployment/auth-server-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/customer-service-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/account-service-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/api-gateway-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/frontend-v2 -n banking-v2 --timeout=180s'
+                bat 'kubectl get pods,services -n banking-v2 -o wide'
+            }
+        }
+    }
+    post {
+        success { echo 'V2 workloads are running in namespace banking-v2.' }
+        failure { echo 'V2 START failed. Run Banking-V2-CI-CD if deployments do not exist.' }
+    }
+}

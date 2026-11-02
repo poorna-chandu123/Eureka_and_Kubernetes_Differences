@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('Checkout V2 Configuration') {
+            steps { checkout scm }
+        }
+        stage('Check Kubernetes Context') {
+            steps {
+                bat 'kubectl config current-context'
+                bat 'kubectl get namespace banking-v2'
+            }
+        }
+        stage('Stop V2 Workloads') {
+            steps {
+                bat 'kubectl scale deployment --all --replicas=0 -n banking-v2'
+                bat 'kubectl get deployments,pods,services -n banking-v2'
+            }
+        }
+    }
+    post {
+        success { echo 'V2 Deployments scaled to zero. Namespace and Services are retained.' }
+        failure { echo 'V2 STOP failed. Check Kubernetes context and namespace.' }
+    }
+}

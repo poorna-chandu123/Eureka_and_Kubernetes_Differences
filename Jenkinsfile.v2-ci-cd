@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'JDK21'
+        maven 'Maven399'
+    }
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('Checkout V2 Source') {
+            steps { checkout scm }
+        }
+        stage('Maven Verification') {
+            steps { bat 'mvn -B clean verify' }
+        }
+        stage('Check Docker and Kubernetes Tools') {
+            steps {
+                bat 'docker version'
+                bat 'docker-compose version'
+                bat 'kubectl version --client'
+                bat 'kubectl config current-context'
+                bat 'kubectl get nodes'
+            }
+        }
+        stage('Build V2 Docker Images') {
+            steps { bat 'docker-compose -f compose.v2.yml build' }
+        }
+        stage('Match Images to Kubernetes Tags') {
+            steps {
+                bat 'docker tag banking-account-service:v2-local banking-account-service:v2-fix1'
+                bat 'docker tag banking-api-gateway:v2-local banking-api-gateway:v2-fix2'
+                bat 'docker tag banking-auth-server:v2-local banking-auth-server:v2-fix5'
+                bat 'docker tag banking-customer-service:v2-local banking-customer-service:v2-fix2'
+            }
+        }
+        stage('Create Namespace and Apply V2 Manifests') {
+            steps {
+                bat 'kubectl apply -f kubernetes-setup/namespace-v2.yaml'
+                bat 'kubectl apply -f kubernetes-setup/'
+            }
+        }
+        stage('Restart Deployments to Use New Images') {
+            steps {
+                bat 'kubectl rollout restart deployment/config-server-v2 -n banking-v2'
+                bat 'kubectl rollout restart deployment/auth-server-v2 -n banking-v2'
+                bat 'kubectl rollout restart deployment/customer-service-v2 -n banking-v2'
+                bat 'kubectl rollout restart deployment/account-service-v2 -n banking-v2'
+                bat 'kubectl rollout restart deployment/api-gateway-v2 -n banking-v2'
+                bat 'kubectl rollout restart deployment/frontend-v2 -n banking-v2'
+            }
+        }
+        stage('Wait for V2 Deployments') {
+            steps {
+                bat 'kubectl rollout status deployment/config-server-v2 -n banking-v2 --timeout=180s'
+                bat 'kubectl rollout status deployment/auth-server-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/customer-service-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/account-service-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/api-gateway-v2 -n banking-v2 --timeout=240s'
+                bat 'kubectl rollout status deployment/frontend-v2 -n banking-v2 --timeout=180s'
+                bat 'kubectl get pods,services -n banking-v2 -o wide'
+            }
+        }
+    }
+    post {
+        success { echo 'V2 CI/CD completed in namespace banking-v2.' }
+        failure { echo 'V2 CI/CD failed. Check the first failed stage in Console Output.' }
+        always { echo 'This pipeline targets banking-v2 only; it does not deploy V1.' }
+    }
+}
