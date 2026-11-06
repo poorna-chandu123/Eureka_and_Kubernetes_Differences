@@ -5,9 +5,9 @@ cd "/mnt/e/GIT/Repo-3 for Eureka_and_Kubernetes"
 
 
 ## Operation	Direct command with out any Docker UI buttons - replace the "compose.v1.yml" to V2
-## Build images	    docker compose -f compose.v1.yml build
-## Start containers	docker compose -f compose.v1.yml up -d
-## Stop containers	    docker compose -f compose.v1.yml stop
+ Build images	    docker compose -f compose.v1.yml build
+ Start containers	docker compose -f compose.v1.yml up -d
+ Stop containers	    docker compose -f compose.v1.yml stop
 
 
 ##  For V1 No need any other Commands - (" like to buils images , deployment perpous )

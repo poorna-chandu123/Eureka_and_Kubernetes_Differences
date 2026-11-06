@@ -1,5 +1,9 @@
 pipeline {
     agent any
+
+    environment {
+        KUBECONFIG = 'C:\\Users\\poorna chandu\\.kube\\config'
+    }
     tools {
         jdk 'JDK21'
         maven 'Maven399'
