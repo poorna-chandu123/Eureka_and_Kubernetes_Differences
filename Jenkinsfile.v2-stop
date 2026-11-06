@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    environment {
+        KUBECONFIG = 'C:\\Users\\poorna chandu\\.kube\\config'
+    }
+
     options {
         skipDefaultCheckout(true)
         timestamps()
